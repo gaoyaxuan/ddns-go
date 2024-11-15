@@ -1227,29 +1227,5 @@
 
       }
 
-    // // // 模拟测试webhook
-    // document.getElementById("webhookTestBtn").addEventListener('click', async e => {
-    //   e.preventDefault();
-    //   try {
-    //     await request.post("./webhookTest", {
-    //       URL: globalConf.WebhookURL,
-    //       RequestBody: globalConf.WebhookRequestBody,
-    //       Headers: globalConf.WebhookHeaders,
-    //     });
-    //     showMessage({
-    //       content: i18n({
-    //         "en": "Submit simulation test successfully! The data is fake data, just to test whether the Webhook is normal or not",
-    //         "zh-cn": "提交模拟测试成功! 数据为假数据, 只是为了测试Webhook正常与否",
-    //       }),
-    //       type: "success",
-    //     });
-    //   } catch (err) {
-    //     showMessage({
-    //       content: err.toString(),
-    //       type: "error",
-    //       duration: 5000,
-    //     });
-    //   }
-    // });
   </script>
 </html>

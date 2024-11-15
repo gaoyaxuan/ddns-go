@@ -110,6 +110,9 @@ func getDnsConfStr(dnsConf []config.DnsConfig) string {
 }
 
 func getWebhooksStr(webHooks []config.Webhook) string {
+	if webHooks == nil {
+		return "[]"
+	}
 	byt, _ := json.Marshal(webHooks)
 	return string(byt)
 }
