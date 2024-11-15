@@ -28,13 +28,11 @@ func checkAndSave(request *http.Request) string {
 
 	// 从请求中读取 JSON 数据
 	var data struct {
-		Username           string       `json:"Username"`
-		Password           string       `json:"Password"`
-		NotAllowWanAccess  bool         `json:"NotAllowWanAccess"`
-		WebhookURL         string       `json:"WebhookURL"`
-		WebhookRequestBody string       `json:"WebhookRequestBody"`
-		WebhookHeaders     string       `json:"WebhookHeaders"`
-		DnsConf            []dnsConf4JS `json:"DnsConf"`
+		Username          string           `json:"Username"`
+		Password          string           `json:"Password"`
+		NotAllowWanAccess bool             `json:"NotAllowWanAccess"`
+		Webhooks          []config.Webhook `json:"Webhooks"`
+		DnsConf           []dnsConf4JS     `json:"DnsConf"`
 	}
 
 	// 解析请求中的 JSON 数据
@@ -50,10 +48,17 @@ func checkAndSave(request *http.Request) string {
 	conf.Lang = util.InitLogLang(accept)
 
 	conf.NotAllowWanAccess = data.NotAllowWanAccess
-	conf.WebhookURL = strings.TrimSpace(data.WebhookURL)
-	conf.WebhookRequestBody = strings.TrimSpace(data.WebhookRequestBody)
-	conf.WebhookHeaders = strings.TrimSpace(data.WebhookHeaders)
-
+	var webhooksConfArray = make([]config.Webhook, 0, len(data.Webhooks))
+	for _, webhook := range data.Webhooks {
+		webhook.WebhookURL = strings.TrimSpace(webhook.WebhookURL)
+		webhook.WebhookRequestBody = strings.TrimSpace(webhook.WebhookRequestBody)
+		webhook.WebhookHeaders = strings.TrimSpace(webhook.WebhookHeaders)
+		if webhook.WebhookURL != "" {
+			var webhooksConf = config.Webhook{WebhookURL: webhook.WebhookURL}
+			webhooksConfArray = append(webhooksConfArray, webhooksConf)
+		}
+	}
+	conf.Webhooks = webhooksConfArray
 	// 如果新密码不为空则检查是否够强, 内/外网要求强度不同
 	conf.Username = usernameNew
 	if passwordNew != "" {

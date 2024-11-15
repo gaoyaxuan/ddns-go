@@ -60,15 +60,15 @@ func Writing(writer http.ResponseWriter, request *http.Request) {
 		DnsConf           template.JS
 		NotAllowWanAccess bool
 		Username          string
-		config.Webhook
-		Version string
-		Ipv4    []config.NetInterface
-		Ipv6    []config.NetInterface
+		Webhooks          string
+		Version           string
+		Ipv4              []config.NetInterface
+		Ipv6              []config.NetInterface
 	}{
 		DnsConf:           template.JS(getDnsConfStr(conf.DnsConf)),
 		NotAllowWanAccess: conf.NotAllowWanAccess,
 		Username:          conf.User.Username,
-		Webhook:           conf.Webhook,
+		Webhooks:          getWebhooksStr(conf.Webhooks),
 		Version:           os.Getenv(VersionEnv),
 		Ipv4:              ipv4,
 		Ipv6:              ipv6,
@@ -106,6 +106,11 @@ func getDnsConfStr(dnsConf []config.DnsConfig) string {
 		})
 	}
 	byt, _ := json.Marshal(dnsConfArray)
+	return string(byt)
+}
+
+func getWebhooksStr(webHooks []config.Webhook) string {
+	byt, _ := json.Marshal(webHooks)
 	return string(byt)
 }
 

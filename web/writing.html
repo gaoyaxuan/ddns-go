@@ -595,86 +595,9 @@
                 </div>
               </div>
             </div>
-
-            <div class="portlet">
-              <h5 class="portlet__head">Webhook</h5>
-              <div class="portlet__body">
-                <div class="form-group row">
-                  <label for="WebhookURL" class="col-sm-2 col-form-label"
-                    >URL</label
-                  >
-                  <div class="col-sm-10">
-                    <input
-                      class="form-control form"
-                      name="WebhookURL"
-                      id="WebhookURL"
-                      value="{{.WebhookURL}}"
-                      aria-describedby="WebhookURLHelp"
-                    />
-                    <small
-                      data-i18n_html="WebhookURLHelp"
-                      id="WebhookURLHelp"
-                      class="form-text text-muted"
-                    ></small>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label
-                    for="WebhookRequestBody"
-                    class="col-sm-2 col-form-label"
-                    >RequestBody</label
-                  >
-                  <div class="col-sm-10">
-                    <textarea
-                      class="form-control form"
-                      id="WebhookRequestBody"
-                      name="WebhookRequestBody"
-                      rows="3"
-                      aria-describedby="WebhookRequestBodyHelp"
-                    >{{.WebhookRequestBody}}</textarea>
-                    <small
-                      data-i18n_html="WebhookRequestBodyHelp"
-                      id="WebhookRequestBodyHelp"
-                      class="form-text text-muted"
-                    ></small>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label for="WebhookHeaders" class="col-sm-2 col-form-label"
-                    >Headers</label
-                  >
-                  <div class="col-sm-10">
-                    <textarea
-                      class="form-control form"
-                      id="WebhookHeaders"
-                      name="WebhookHeaders"
-                      rows="1"
-                      aria-describedby="WebhookHeadersHelp"
-                    >{{.WebhookHeaders}}</textarea>
-                    <small
-                      data-i18n_html="WebhookHeadersHelp"
-                      id="WebhookHeadersHelp"
-                      class="form-text text-muted"
-                    ></small>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label class="col-sm-2 col-form-label"></label>
-                  <div class="col-sm-10">
-                    <button
-                      data-i18n="Try it"
-                      class="webhook-button btn btn-primary btn-sm"
-                      id="webhookTestBtn"
-                    >
-                      Try it
-                    </button>
-                  </div>
-                </div>
+              <div class="portlet" id="webhookList">
               </div>
-            </div>
+
           </form>
 
           <button
@@ -722,9 +645,7 @@
       NotAllowWanAccess: document.getElementById("NotAllowWanAccess").checked,
       Username: document.getElementById("Username").value,
       Password: document.getElementById("Password").value,
-      WebhookURL: document.getElementById("WebhookURL").value,
-      WebhookRequestBody: document.getElementById("WebhookRequestBody").value,
-      WebhookHeaders: document.getElementById("WebhookHeaders").value,
+        Webhooks:[],
     };
     const defaultDnsConf = {
       Name: "",
@@ -1137,29 +1058,198 @@
 
   <!-- 测试相关 -->
   <script>
-    // 模拟测试webhook
-    document.getElementById("webhookTestBtn").addEventListener('click', async e => {
-      e.preventDefault();
-      try {
-        await request.post("./webhookTest", {
-          URL: globalConf.WebhookURL,
-          RequestBody: globalConf.WebhookRequestBody,
-          Headers: globalConf.WebhookHeaders,
-        });
-        showMessage({
-          content: i18n({
-            "en": "Submit simulation test successfully! The data is fake data, just to test whether the Webhook is normal or not",
-            "zh-cn": "提交模拟测试成功! 数据为假数据, 只是为了测试Webhook正常与否",
-          }),
-          type: "success",
-        });
-      } catch (err) {
-        showMessage({
-          content: err.toString(),
-          type: "error",
-          duration: 5000,
-        });
+
+      function reloadWebhooksConf(webhooksStr) {
+          let webhooksConf;
+          try {
+              webhooksConf = JSON.parse(webhooksStr);
+              if (webhooksConf.length === 0) {
+                  console.warn("dnsConf is empty, add defaultDnsConf");
+                  globalConf.Webhooks=[{WebhookURL:"",WebhookRequestBody:"",WebhookHeaders:""}]
+              }else {
+                  globalConf.Webhooks=webhooksConf;
+              }
+          } catch (e) {
+              alert("error: " + e.toString());
+              return;
+          }
       }
-    });
+      // 初始化dnsConf
+      reloadWebhooksConf("{{.Webhooks}}")
+
+
+      // Function to render the webhooks list
+      function renderWebhooks() {
+          const webhookList = document.getElementById('webhookList');
+          webhookList.innerHTML = ''; // Clear existing content
+
+          globalConf.Webhooks.forEach((webhook, index) => {
+              // Create the HTML structure for each webhook form
+              const webhookContainer = document.createElement('div');
+              webhookContainer.className = 'webhook-container';
+              webhookContainer.innerHTML = `
+            <div class="portlet" id="Webhooks${index}">
+              <h5 class="portlet__head">Webhook${index}</h5>
+                <div style="margin-left: auto; margin-right: 0">
+                    <button data-i18n="Add"  type="button" id="webhookAdd" class="btn btn-primary btn-sm submit_btn" onclick="addWebhook(${index})" >Add</button>
+                    <button data-i18n="Delete"  type="button" id="webhookDel" onclick="deleteWebhook(${index})" class="btn btn-prim  ary btn-sm submit_btn">Delete</button>
+                </div>
+              <div class="portlet__body">
+                <div class="form-group row">
+                  <label for="WebhookURL" class="col-sm-2 col-form-label"
+                    >URL</label
+                  >
+                  <div class="col-sm-10">
+                    <input
+                      class="form-control form"
+                      oninput="updateWebhook(${index}, 'WebhookURL', this.value)"
+                      value="${webhook.WebhookURL}"
+                      aria-describedby="WebhookURLHelp"
+                    />
+                    <small
+                      data-i18n_html="WebhookURLHelp"
+                      id="WebhookURLHelp"
+                      class="form-text text-muted"
+                    ></small>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label
+                    for="WebhookRequestBody"
+                    class="col-sm-2 col-form-label"
+                    >RequestBody</label
+                  >
+                  <div class="col-sm-10">
+                    <textarea
+                      class="form-control form"
+                      oninput="updateWebhook(${index}, 'WebhookRequestBody', this.value)"
+                      rows="3"
+                      aria-describedby="WebhookRequestBodyHelp"
+                    >${webhook.WebhookRequestBody}</textarea>
+                    <small
+                      data-i18n_html="WebhookRequestBodyHelp"
+                      id="WebhookRequestBodyHelp"
+                      class="form-text text-muted"
+                    ></small>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label for="WebhookHeaders" class="col-sm-2 col-form-label"
+                    >Headers</label
+                  >
+                  <div class="col-sm-10">
+                    <textarea
+                      class="form-control form"
+                      rows="3"
+                      aria-describedby="WebhookHeadersHelp"
+                       oninput="updateWebhook(${index}, 'WebhookHeaders', this.value)"
+                    >${webhook.WebhookHeaders}</textarea>
+                    <small
+                      data-i18n_html="WebhookHeadersHelp"
+                      id="WebhookHeadersHelp"
+                      class="form-text text-muted"
+                    ></small>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-sm-2 col-form-label"></label>
+                  <div class="col-sm-10">
+                    <button
+                     type="button"
+                      data-i18n="Try it"
+                      class="webhook-button btn btn-primary submit_btn btn-sm "
+                      id="webhookTestBtn"
+                      onclick="testWebhook(${index})"
+                    >
+                      Try it
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+      `;
+
+              webhookList.appendChild(webhookContainer);
+              convertDom()
+          });
+      }
+      // Function to add a new webhook
+      function addWebhook(index) {
+          globalConf.Webhooks.splice(index+1,0,{ WebhookURL: '', WebhookRequestBody: '', WebhookHeaders: '' });
+          renderWebhooks();
+      }
+
+      // Function to delete a webhook by index
+      function deleteWebhook(index) {
+          if (globalConf.Webhooks.length > 1) {
+              globalConf.Webhooks.splice(index, 1);
+          }else {
+              showMessage({
+                  content: "至少需要保留一个,不需要webhook清空各项即可",
+                  type: "error",
+                  duration: 5000,
+              });
+          }
+          renderWebhooks();
+      }
+
+      // Function to update webhook data dynamically
+      function updateWebhook(index, field, value) {
+          globalConf.Webhooks[index][field] = value;
+      }
+      renderWebhooks();
+
+
+      async function testWebhook(index) {
+          try {
+              await request.post("./webhookTest", {
+                  URL: globalConf.Webhooks[index].WebhookURL,
+                  RequestBody: globalConf.Webhooks[index].WebhookRequestBody,
+                  Headers: globalConf.Webhooks[index].WebhookHeaders,
+              });
+              await showMessage({
+                  content: i18n({
+                      "en": "Submit simulation test successfully! The data is fake data, just to test whether the Webhook is normal or not",
+                      "zh-cn": "提交模拟测试成功! 数据为假数据, 只是为了测试Webhook正常与否",
+                  }),
+                  type: "success",
+              });
+          } catch (err) {
+              await showMessage({
+                  content: err.toString(),
+                  type: "error",
+                  duration: 5000,
+              });
+          }
+
+      }
+
+    // // // 模拟测试webhook
+    // document.getElementById("webhookTestBtn").addEventListener('click', async e => {
+    //   e.preventDefault();
+    //   try {
+    //     await request.post("./webhookTest", {
+    //       URL: globalConf.WebhookURL,
+    //       RequestBody: globalConf.WebhookRequestBody,
+    //       Headers: globalConf.WebhookHeaders,
+    //     });
+    //     showMessage({
+    //       content: i18n({
+    //         "en": "Submit simulation test successfully! The data is fake data, just to test whether the Webhook is normal or not",
+    //         "zh-cn": "提交模拟测试成功! 数据为假数据, 只是为了测试Webhook正常与否",
+    //       }),
+    //       type: "success",
+    //     });
+    //   } catch (err) {
+    //     showMessage({
+    //       content: err.toString(),
+    //       type: "error",
+    //       duration: 5000,
+    //     });
+    //   }
+    // });
   </script>
 </html>

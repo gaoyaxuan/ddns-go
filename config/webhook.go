@@ -12,9 +12,9 @@ import (
 
 // Webhook Webhook
 type Webhook struct {
-	WebhookURL         string
-	WebhookRequestBody string
-	WebhookHeaders     string
+	WebhookURL         string `json:"WebhookURL"`
+	WebhookRequestBody string `json:"WebhookRequestBody"`
+	WebhookHeaders     string `json:"WebhookHeaders"`
 }
 
 // updateStatusType 更新状态
@@ -42,59 +42,64 @@ func ExecWebhook(domains *Domains, conf *Config) (v4Status updateStatusType, v6S
 	v4Status = getDomainsStatus(domains.Ipv4Domains)
 	v6Status = getDomainsStatus(domains.Ipv6Domains)
 
-	if conf.WebhookURL != "" && (v4Status != UpdatedNothing || v6Status != UpdatedNothing) {
-		// 第3次失败才触发一次webhook
-		if v4Status == UpdatedFailed || v6Status == UpdatedFailed {
-			updatedFailedTimes++
-			if updatedFailedTimes != 3 {
-				util.Log("将不会触发Webhook, 仅在第 3 次失败时触发一次Webhook, 当前失败次数：%d", updatedFailedTimes)
+	for _, webhook := range conf.Webhooks {
+
+		if webhook.WebhookURL != "" && (v4Status != UpdatedNothing || v6Status != UpdatedNothing) {
+			// 第3次失败才触发一次webhook
+			if v4Status == UpdatedFailed || v6Status == UpdatedFailed {
+				updatedFailedTimes++
+				if updatedFailedTimes != 3 {
+					util.Log("将不会触发Webhook, 仅在第 3 次失败时触发一次Webhook, 当前失败次数：%d", updatedFailedTimes)
+					return
+				}
+			} else {
+				updatedFailedTimes = 0
+			}
+
+			// 成功和失败都要触发webhook
+			method := "GET"
+			postPara := ""
+			contentType := "application/x-www-form-urlencoded"
+			if webhook.WebhookRequestBody != "" {
+				method = "POST"
+				postPara = replacePara(domains, webhook.WebhookRequestBody, v4Status, v6Status)
+				if json.Valid([]byte(postPara)) {
+					contentType = "application/json"
+				} else if hasJSONPrefix(postPara) {
+					// 如果 RequestBody 的 JSON 无效但前缀为 JSON，提示无效
+					util.Log("Webhook中的 RequestBody JSON 无效")
+				}
+			}
+			requestURL := replacePara(domains, webhook.WebhookURL, v4Status, v6Status)
+			u, err := url.Parse(requestURL)
+			if err != nil {
+				util.Log("Webhook配置中的URL不正确")
 				return
 			}
-		} else {
-			updatedFailedTimes = 0
-		}
+			req, err := http.NewRequest(method, fmt.Sprintf("%s://%s%s?%s", u.Scheme, u.Host, u.Path, u.Query().Encode()), strings.NewReader(postPara))
+			if err != nil {
+				util.Log("Webhook调用失败! 异常信息：%s", err)
+				return
+			}
 
-		// 成功和失败都要触发webhook
-		method := "GET"
-		postPara := ""
-		contentType := "application/x-www-form-urlencoded"
-		if conf.WebhookRequestBody != "" {
-			method = "POST"
-			postPara = replacePara(domains, conf.WebhookRequestBody, v4Status, v6Status)
-			if json.Valid([]byte(postPara)) {
-				contentType = "application/json"
-			} else if hasJSONPrefix(postPara) {
-				// 如果 RequestBody 的 JSON 无效但前缀为 JSON，提示无效
-				util.Log("Webhook中的 RequestBody JSON 无效")
+			headers := extractHeaders(webhook.WebhookHeaders)
+			for key, value := range headers {
+				req.Header.Add(key, value)
+			}
+			req.Header.Add("content-type", contentType)
+
+			clt := util.CreateHTTPClient()
+			resp, err := clt.Do(req)
+			body, err := util.GetHTTPResponseOrg(resp, err)
+			if err == nil {
+				util.Log("Webhook调用成功! 返回数据：%s", string(body))
+			} else {
+				util.Log("Webhook调用失败! 异常信息：%s", err)
 			}
 		}
-		requestURL := replacePara(domains, conf.WebhookURL, v4Status, v6Status)
-		u, err := url.Parse(requestURL)
-		if err != nil {
-			util.Log("Webhook配置中的URL不正确")
-			return
-		}
-		req, err := http.NewRequest(method, fmt.Sprintf("%s://%s%s?%s", u.Scheme, u.Host, u.Path, u.Query().Encode()), strings.NewReader(postPara))
-		if err != nil {
-			util.Log("Webhook调用失败! 异常信息：%s", err)
-			return
-		}
 
-		headers := extractHeaders(conf.WebhookHeaders)
-		for key, value := range headers {
-			req.Header.Add(key, value)
-		}
-		req.Header.Add("content-type", contentType)
-
-		clt := util.CreateHTTPClient()
-		resp, err := clt.Do(req)
-		body, err := util.GetHTTPResponseOrg(resp, err)
-		if err == nil {
-			util.Log("Webhook调用成功! 返回数据：%s", string(body))
-		} else {
-			util.Log("Webhook调用失败! 异常信息：%s", err)
-		}
 	}
+
 	return
 }
 

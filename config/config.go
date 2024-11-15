@@ -60,7 +60,7 @@ type DNS struct {
 type Config struct {
 	DnsConf []DnsConfig
 	User
-	Webhook
+	Webhooks []Webhook
 	// 禁止公网访问
 	NotAllowWanAccess bool
 	// 语言

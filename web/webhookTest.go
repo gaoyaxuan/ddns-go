@@ -43,10 +43,12 @@ func WebhookTest(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	fakeConfig := &config.Config{
-		Webhook: config.Webhook{
-			WebhookURL:         url,
-			WebhookRequestBody: requestBody,
-			WebhookHeaders:     headers,
+		Webhooks: []config.Webhook{
+			{
+				WebhookURL:         url,
+				WebhookRequestBody: requestBody,
+				WebhookHeaders:     headers,
+			},
 		},
 	}
 
