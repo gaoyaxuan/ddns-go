@@ -54,7 +54,7 @@ func checkAndSave(request *http.Request) string {
 		webhook.WebhookRequestBody = strings.TrimSpace(webhook.WebhookRequestBody)
 		webhook.WebhookHeaders = strings.TrimSpace(webhook.WebhookHeaders)
 		if webhook.WebhookURL != "" {
-			var webhooksConf = config.Webhook{WebhookURL: webhook.WebhookURL}
+			var webhooksConf = config.Webhook{WebhookURL: webhook.WebhookURL, WebhookRequestBody: webhook.WebhookRequestBody, WebhookHeaders: webhook.WebhookHeaders}
 			webhooksConfArray = append(webhooksConfArray, webhooksConf)
 		}
 	}
