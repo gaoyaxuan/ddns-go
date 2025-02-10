@@ -1073,6 +1073,7 @@
   <!-- 测试相关 -->
   <script>
 
+
       function reloadWebhooksConf(webhooksStr) {
           let webhooksConf;
           try {
@@ -1219,18 +1220,28 @@
 
       async function testWebhook(index) {
           try {
-              await request.post("./webhookTest", {
-                  URL: globalConf.Webhooks[index].WebhookURL,
-                  RequestBody: globalConf.Webhooks[index].WebhookRequestBody,
-                  Headers: globalConf.Webhooks[index].WebhookHeaders,
-              });
-              await showMessage({
-                  content: i18n({
-                      "en": "Submit simulation test successfully! The data is fake data, just to test whether the Webhook is normal or not",
-                      "zh-cn": "提交模拟测试成功! 数据为假数据, 只是为了测试Webhook正常与否",
-                  }),
-                  type: "success",
-              });
+              if (globalConf.Webhooks[index].WebhookURL){
+                  await request.post("./webhookTest", {
+                      URL: globalConf.Webhooks[index].WebhookURL,
+                      RequestBody: globalConf.Webhooks[index].WebhookRequestBody,
+                      Headers: globalConf.Webhooks[index].WebhookHeaders,
+                  });
+                  await showMessage({
+                      content: i18n({
+                          "en": "Submit simulation test successfully! The data is fake data, just to test whether the Webhook is normal or not",
+                          "zh-cn": "提交模拟测试成功! 数据为假数据, 只是为了测试Webhook正常与否",
+                      }),
+                      type: "success",
+                  });
+              }else {
+                  await showMessage({
+                      content: i18n({
+                          "en": "Please enter the Webhook URL.",
+                          "zh-cn": "请输入Webhook URL",
+                      }),
+                      type: "error",
+                  });
+              }
           } catch (err) {
               await showMessage({
                   content: err.toString(),
@@ -1240,8 +1251,6 @@
           }
 
       }
-
-    });
 
     // 测试正则表达式
     const $ipv6Reg = document.getElementById("Ipv6Reg");
