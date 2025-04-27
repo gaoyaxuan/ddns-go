@@ -158,6 +158,28 @@ const DNS_PROVIDERS = {
       "zh-cn": "<a target='_blank' href='https://console.volcengine.com/iam/keymanage/'>创建火山引擎 API 密钥</a>",
     }
   },
+  dynv6: {
+    name: {
+      "en": "Dynv6",
+    },
+    idLabel: "",
+    secretLabel: "Token",
+    helpHtml: {
+        "en": "<a target='_blank' href='https://dynv6.com/keys'>Create Token</a>",
+        "zh-cn": "<a target='_blank' href='https://dynv6.com/keys'>创建令牌</a>",
+    }
+  },
+  spaceship: {
+    name: {
+      "en": "Spaceship",
+    },
+    idLabel: "API Key",
+    secretLabel: "API Secret",
+    helpHtml: {
+      "en": "<a target='_blank' href='https://www.spaceship.com/application/api-manager/'>Create API Key</a>",
+      "zh-cn": "<a target='_blank' href='https://www.spaceship.com/application/api-manager/'>创建 API 密钥</a>",
+    }
+  },
 };
 
 const SVG_CODE = {
