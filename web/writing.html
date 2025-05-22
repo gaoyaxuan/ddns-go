@@ -887,20 +887,30 @@
 
     // 删除配置按钮被点击
     document.getElementById("delBtn").addEventListener('click', e => {
-      e.preventDefault();
-      const $index = document.getElementById("index");
-      $index.options[configIndex].disabled = true;
-      $index.options[configIndex].text = configIndex + 1 + " - Deleted";
-      dnsConf[configIndex] = null;
-      while (dnsConf[configIndex] === null && configIndex >= 0) {
-        configIndex--;
-      }
-      if (configIndex >= 0) {
+        e.preventDefault();
+        if (dnsConf.length <= 1) {
+            showMessage({
+                content: "至少需要保留一个配置",
+                type: "error",
+                duration: 5000,
+            });
+            return;
+        }
+
+        // 从数组中移除项目
+        dnsConf.splice(configIndex, 1);
+
+        // 重建索引选择器
+        const $index = document.getElementById("index");
+        $index.innerHTML = "";
+        for (let i = 0; i < dnsConf.length; i++) {
+            appendConfigToIndex(i);
+        }
+
+        // 选择新的当前项
+        configIndex = Math.min(configIndex, dnsConf.length - 1);
         $index.value = configIndex;
         showConf(configIndex);
-      } else {
-        document.getElementById("addBtn").click();
-      }
     });
 
     // 保存配置按钮被点击
@@ -1107,7 +1117,7 @@
               <h5 class="portlet__head">Webhook${index}</h5>
                 <div style="margin-left: auto; margin-right: 0">
                     <button data-i18n="Add"  type="button" id="webhookAdd" class="btn btn-primary btn-sm submit_btn" onclick="addWebhook(${index})" >Add</button>
-                    <button data-i18n="Delete"  type="button" id="webhookDel" onclick="deleteWebhook(${index})" class="btn btn-prim  ary btn-sm submit_btn">Delete</button>
+                    <button data-i18n="Delete" type="button" id="webhookDel_${index}" class="btn btn-primary btn-sm submit_btn" onclick="deleteWebhook(${index})">Delete</button>
                 </div>
               <div class="portlet__body">
                 <div class="form-group row">
@@ -1201,14 +1211,14 @@
       function deleteWebhook(index) {
           if (globalConf.Webhooks.length > 1) {
               globalConf.Webhooks.splice(index, 1);
-          }else {
+              renderWebhooks(); // 重新渲染整个列表
+          } else {
               showMessage({
                   content: "至少需要保留一个,不需要webhook清空各项即可",
                   type: "error",
                   duration: 5000,
               });
           }
-          renderWebhooks();
       }
 
       // Function to update webhook data dynamically
