@@ -27,6 +27,8 @@ var (
 		tencentCloudEndPoint,
 		dynadotEndpoint,
 		dynv6Endpoint,
+		gcoreAPIEndpoint,
+		edgeoneEndPoint,
 	}
 
 	Ipcache = [][2]util.IpCache{}
@@ -64,6 +66,8 @@ func RunOnce() {
 			dnsSelected = &TrafficRoute{}
 		case "dnspod":
 			dnsSelected = &Dnspod{}
+		case "dnsla":
+			dnsSelected = &Dnsla{}
 		case "cloudflare":
 			dnsSelected = &Cloudflare{}
 		case "huaweicloud":
@@ -88,6 +92,14 @@ func RunOnce() {
 			dnsSelected = &Dynv6{}
 		case "spaceship":
 			dnsSelected = &Spaceship{}
+		case "nowcn":
+			dnsSelected = &Nowcn{}
+		case "eranet":
+			dnsSelected = &Eranet{}
+		case "gcore":
+			dnsSelected = &Gcore{}
+		case "edgeone":
+			dnsSelected = &EdgeOne{}
 		default:
 			dnsSelected = &Alidns{}
 		}

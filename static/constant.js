@@ -76,8 +76,8 @@ const DNS_PROVIDERS = {
     idLabel: "AccessKey ID",
     secretLabel: "AccessKey Secret",
     helpHtml: {
-      "en": "<a target='_blank' href='https://console.bce.baidu.com/iam/?_=1651763238057#/iam/accesslist'>Create AccessKey</a><br /><a target='_blank' href='https://ticket.bce.baidu.com/#/ticket/create~productId=60&questionId=393&channel=2'>Apply for a ticket</a> DDNS needs to call the API, and the related APIs of Baidu Cloud are only open to users who have applied. Please submit a ticket before using it.",
-      "zh-cn": "<a target='_blank' href='https://console.bce.baidu.com/iam/?_=1651763238057#/iam/accesslist'>创建 AccessKey</a><br /><a target='_blank' href='https://ticket.bce.baidu.com/#/ticket/create~productId=60&questionId=393&channel=2'>申请工单</a> DDNS 需调用 API ，而百度云相关 API 仅对申请用户开放，使用前请先提交工单申请。",
+      "en": "<a target='_blank' href='https://console.bce.baidu.com/iam/?_=1651763238057#/iam/accesslist'>Create AccessKey</a>",
+      "zh-cn": "<a target='_blank' href='https://console.bce.baidu.com/iam/?_=1651763238057#/iam/accesslist'>创建 AccessKey</a>",
     }
   },
   porkbun: {
@@ -165,8 +165,8 @@ const DNS_PROVIDERS = {
     idLabel: "",
     secretLabel: "Token",
     helpHtml: {
-        "en": "<a target='_blank' href='https://dynv6.com/keys'>Create Token</a>",
-        "zh-cn": "<a target='_blank' href='https://dynv6.com/keys'>创建令牌</a>",
+      "en": "<a target='_blank' href='https://dynv6.com/keys'>Create Token</a>",
+      "zh-cn": "<a target='_blank' href='https://dynv6.com/keys'>创建令牌</a>",
     }
   },
   spaceship: {
@@ -178,6 +178,65 @@ const DNS_PROVIDERS = {
     helpHtml: {
       "en": "<a target='_blank' href='https://www.spaceship.com/application/api-manager/'>Create API Key</a>",
       "zh-cn": "<a target='_blank' href='https://www.spaceship.com/application/api-manager/'>创建 API 密钥</a>",
+    }
+  },
+  dnsla: {
+    name: {
+      "en": "Dnsla",
+      "zh-cn": "Dnsla",
+    },
+    idLabel: "APIID",
+    secretLabel: "API密钥",
+    helpHtml: {
+      "en": "<a target='_blank' href='https://console.dns.la/login?aksk=1'>Create AccessKey</a>",
+      "zh-cn": "<a target='_blank' href='https://console.dns.la/login?aksk=1'>创建 AccessKey</a>",
+    }
+  },
+  nowcn: {
+    name: {
+      "en": "Nowcn",
+      "zh-cn": "时代互联",
+    },
+    idLabel: "auth-userid",
+    secretLabel: "api-key",
+    helpHtml: {
+      "en": "<a target='_blank' href='https://www.now.cn/'>api-key</a>",
+      "zh-cn": "<a target='_blank' href='https://www.now.cn/'>获取 api-key</a>",
+    }
+  },
+  eranet: {
+    name: {
+      "en": "Eranet",
+      "zh-cn": "Eranet",
+    },
+    idLabel: "auth-userid",
+    secretLabel: "api-key",
+    helpHtml: {
+      "en": "<a target='_blank' href='https://partner.eranet.com/admin/mode_Http_Api_detail.php'>api-key</a>",
+      "zh-cn": "<a target='_blank' href='https://partner.eranet.com/admin/mode_Http_Api_detail.php'>获取 api-key</a>",
+    }
+  },
+  gcore: {
+    name: {
+      "en": "Gcore",
+    },
+    idLabel: "",
+    secretLabel: "API Token",
+    helpHtml: {
+      "en": "<a target='_blank' href='https://portal.gcore.com/accounts/profile/api-tokens/create'>Create API Token</a>",
+      "zh-cn": "<a target='_blank' href='https://portal.gcore.com/accounts/profile/api-tokens/create'>创建 API Token</a>",
+    }
+  },
+  edgeone: {
+    name: {
+      "en": "Edgeone",
+      "zh-cn": "Edgeone",
+    },
+    idLabel: "SecretId",
+    secretLabel: "SecretKey",
+    helpHtml: {
+      "en": "<a target='_blank' href='https://console.cloud.tencent.com/cam/capi'>Create AccessKey</a>",
+      "zh-cn": "<a target='_blank' href='https://console.cloud.tencent.com/cam/capi'>创建腾讯云 API 密钥</a>",
     }
   },
 };
