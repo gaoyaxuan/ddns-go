@@ -46,9 +46,6 @@ builds:
         goarch: amd64
     ldflags:
       - -s -w -X main.version={{.Tag}} -X main.buildTime={{.Date}}
-    hooks:
-      post:
-        - sh -c 'test -d zoneinfo || cp -r /usr/share/zoneinfo .'
 
 archives:
   # use zip for windows archives
@@ -81,8 +78,6 @@ dockers:
   - image_templates:
       - "ghcr.io/{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-amd64"
     use: buildx
-    extra_files:
-      - zoneinfo
     build_flag_templates:
       - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -93,8 +88,6 @@ dockers:
   - image_templates:
       - "ghcr.io/{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-arm64"
     use: buildx
-    extra_files:
-      - zoneinfo
     build_flag_templates:
       - "--platform=linux/arm64"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -106,8 +99,6 @@ dockers:
   - image_templates:
       - "ghcr.io/{{ tolower .Env.GITHUB_REPOSITORY }}:{{ .Tag }}-armv7"
     use: buildx
-    extra_files:
-      - zoneinfo
     build_flag_templates:
       - "--platform=linux/arm/v7"
       - "--label=org.opencontainers.image.created={{.Date}}"
