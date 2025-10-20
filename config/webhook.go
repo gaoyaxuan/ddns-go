@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -76,7 +75,7 @@ func ExecWebhook(domains *Domains, conf *Config) (v4Status updateStatusType, v6S
 				util.Log("Webhook配置中的URL不正确")
 				return
 			}
-			req, err := http.NewRequest(method, fmt.Sprintf("%s://%s%s?%s", u.Scheme, u.Host, u.EscapedPath(), u.Query().Encode()), strings.NewReader(postPara))
+			req, err := http.NewRequest(method, u.String(), strings.NewReader(postPara))
 			if err != nil {
 				util.Log("Webhook调用失败! 异常信息：%s", err)
 				return
@@ -97,9 +96,7 @@ func ExecWebhook(domains *Domains, conf *Config) (v4Status updateStatusType, v6S
 				util.Log("Webhook调用失败! 异常信息：%s", err)
 			}
 		}
-
 	}
-
 	return
 }
 
