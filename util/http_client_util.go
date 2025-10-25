@@ -114,9 +114,6 @@ func (t *browserSimulatorTransport) RoundTrip(req *http.Request) (*http.Response
 	if req.Header.Get("Accept-Language") == "" {
 		req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,en-US;q=0.7")
 	}
-	if req.Header.Get("Accept-Encoding") == "" {
-		req.Header.Set("Accept-Encoding", "gzip, deflate, br")
-	}
 
 	// Chrome 特有的 Client Hints（只有 Chrome/Edge 才发送）
 	if profile.SecChUa != "" {
